@@ -1,6 +1,8 @@
 #!/bin/bash
 
-backup_dir="$HOME/.dotfiles_backup"
+# https://github.com/alrra/dotfiles/blob/master/src/os/utils.sh
+
+backup_dir="$HOME/.dotfiles/backup/"
 
 apt_packages=(
   "git"
@@ -12,10 +14,12 @@ apt_packages=(
   "python-dev"
   "virtualenv"
   "build-essential"
-  # "libncursesw5-dev"
   "libssl-dev"
+  "gnome-tweak-tool"
+  "numix-gtk-theme"
+  # "libc6-dev"
+  # "libncursesw5-dev"
   # "libgdbm-dev"
-  "libc6-dev"
   # "libsqlite3-dev"
   # "libbz2-dev"
   # "zlib1g-dev"
@@ -83,7 +87,7 @@ mkd() {
 }
 
 execute() {
-  print_info "$1"
+  print_info "Execute: $1"
 
   $1 &> /dev/null
 
@@ -93,16 +97,17 @@ execute() {
 }
 
 install_apt_packages() {
-  execute "sudo apt-get update" "Done"
-  execute "sudo apt-get upgrade" "Done"
-  execute "sudo apt-get install --yes ${apt_packages[*]}" "Done"
+  execute "sudo apt-get update" "Success"
+  execute "sudo apt-get upgrade" "Success"
+  execute "sudo apt-get install --yes ${apt_packages[*]}" "Success"
 }
 
 backup_dotfiles() {
   mkd $backup_dir
 
-  # for i in ${symlink_dotfiles_source[@]}; do
-  # done
+  for i in ${symlink_dotfiles_source[@]}; do
+    execute "cp --parents $i $backup_dir" "Success"
+  done
 }
 
 symlink_dotfiles() {
@@ -115,6 +120,7 @@ confirm() {
   while true; do
     print_question "$1 [y/n]"
     read -p " " yn
+
     case $yn in
       [Yy]* )
         $2
