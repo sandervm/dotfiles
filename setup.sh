@@ -17,12 +17,12 @@ apt_packages=(
   "libssl-dev"
   "gnome-tweak-tool"
   "numix-gtk-theme"
-  # "libc6-dev"
-  # "libncursesw5-dev"
-  # "libgdbm-dev"
-  # "libsqlite3-dev"
-  # "libbz2-dev"
-  # "zlib1g-dev"
+  "libc6-dev"
+  "libncursesw5-dev"
+  "libgdbm-dev"
+  "libsqlite3-dev"
+  "libbz2-dev"
+  "zlib1g-dev"
 )
 
 symlink_dotfiles_source=(
@@ -42,17 +42,17 @@ print_error() {
 
 print_info() {
   # Print output in purple
-  printf "\n\e[0;35m $1\e[0m\n\n"
+  printf "\n\e[0;35m $1\e[0m\n"
 }
 
 print_question() {
   # Print output in yellow
-  printf "\e[0;33m  [?] $1\e[0m"
+  printf "\e[0;33m [?] $1\e[0m"
 }
 
 print_success() {
   # Print output in green
-  printf "\e[0;32m  [✔] $1\e[0m\n"
+  printf "\e[0;32m [✔] $1\e[0m\n"
 }
 
 print_result() {
@@ -88,12 +88,8 @@ mkd() {
 
 execute() {
   print_info "Execute: $1"
-
   $1 &> /dev/null
-
-  local result=$?
-
-  print_result $result "${2:-$1}"
+  print_result $? "${2:-$1}"
 }
 
 install_apt_packages() {
