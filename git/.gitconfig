@@ -1,0 +1,47 @@
+[include]
+        path = ~/.gitconfig.local
+
+[user]
+	email = sandervanmelsen@gmail.com
+	name = Sander van Melsen
+
+[alias]
+	# Staging
+	a = add
+	aa = add --all
+
+	# Commit
+	c = commit
+	ca = commit -a
+	cm = commit -m
+	cma = commit -ma
+	# cal = !git add -A && git commit # Commit all changes
+	# cne = commit --no-edit
+	amend = commit --amend
+	yolo = commit -am "Deal with it"
+
+	# Clone
+	cl = clone
+
+	# Checkout
+	co = checkout
+	cb = checkout -b
+
+	# Push
+	p = push
+	# pom = push origin master
+	# poh = push origin head
+
+	# Fetch
+	f = fetch --all --prune --tags
+
+	# Rebase
+	# r = rebase -i 
+
+	# Reset
+	# Mixed reset (affects HEAD and Index)
+	unstage = reset HEAD --
+	# Undo last commit (affects HEAD only)
+	undo = reset --soft HEAD~1
+	# Remove last commit (from HEAD, Index and Working Dir)
+	reset = reset --hard HEAD~1
