@@ -5,23 +5,20 @@ backup_dir="$HOME/.dotfiles_backup"
 apt_packages=(
   "git"
   "docker.io"
-  "docker-composer"
+  "docker-compose"
   "chromium-browser"
   "zsh"
   "virtualbox"
-  "vlc"
   "python-dev"
   "virtualenv"
   "build-essential"
-  "libncursesw5-dev"
-  "libreadline5-dev"
+  # "libncursesw5-dev"
   "libssl-dev"
-  "libgdbm-dev"
+  # "libgdbm-dev"
   "libc6-dev"
-  "libsqlite3-dev"
-  "libbz2-dev"
-  "zlib1g-dev"
-  "libssl-dev"
+  # "libsqlite3-dev"
+  # "libbz2-dev"
+  # "zlib1g-dev"
 )
 
 symlink_dotfiles_source=(
@@ -56,11 +53,19 @@ print_success() {
 
 print_result() {
   [ $1 -eq 0 ] && print_success "$2" || print_error "$2"
-  [ "$3" == "true" ] && [ $1 -ne 0 ] && exit
+  # [ "$3" == "true" ] && [ $1 -ne 0 ] && exit
 }
 
 ask_for_sudo() {
-    sudo -v &> /dev/null
+  sudo -v &> /dev/null
+
+  # Update existing `sudo` time stamp until this script has finished
+  # https://gist.github.com/cowboy/3118588
+  while true; do
+    sudo -n true
+    sleep 60
+    kill -0 "$$" || exit
+  done &> /dev/null &
 }
 
 mkd() {
@@ -78,26 +83,30 @@ mkd() {
 }
 
 execute() {
+  print_info "$1"
+
   $1 &> /dev/null
-  print_result $? "${2:-$1}"
+
+  local result=$?
+
+  print_result $result "${2:-$1}"
 }
 
 install_apt_packages() {
-  sudo apt-get update
-  print_success "apt-get update"
-
-  sudo apt-get upgrade
-  print_success "apt-get upgrade"
-
-  sudo apt-get install ${apt_packages[@]}
+  execute "sudo apt-get update" "Done"
+  execute "sudo apt-get upgrade" "Done"
+  execute "sudo apt-get install --yes ${apt_packages[*]}" "Done"
 }
 
 backup_dotfiles() {
   mkd $backup_dir
+
+  # for i in ${symlink_dotfiles_source[@]}; do
+  # done
 }
 
 symlink_dotfiles() {
-  for i in ${symlink_dotfiles[@]}; do
+  for i in ${symlink_dotfiles_source[@]}; do
     execute i
   done
 }
@@ -124,7 +133,7 @@ main() {
 
   confirm "Backup original dotfiles?" backup_dotfiles
 
-  # print_info "Symlink dotfiles: ${apt_packages[*]}"
+  # confirm "Symlink dotfiles?" symlink_dotfiles
 }
 
 main
