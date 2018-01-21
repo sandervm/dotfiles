@@ -1,6 +1,6 @@
 #!/bin/bash
 
-backup_dir="~/.dotfiles_backup"
+backup_dir="$HOME/.dotfiles_backup"
 
 apt_packages=(
   "git"
@@ -8,10 +8,30 @@ apt_packages=(
   "docker-composer"
   "chromium-browser"
   "zsh"
+  "virtualbox"
+  "vlc"
+  "python-dev"
+  "virtualenv"
+  "build-essential"
+  "libncursesw5-dev"
+  "libreadline5-dev"
+  "libssl-dev"
+  "libgdbm-dev"
+  "libc6-dev"
+  "libsqlite3-dev"
+  "libbz2-dev"
+  "zlib1g-dev"
+  "libssl-dev"
 )
 
-symlink_dotfiles=(
-  "ln -s ~/dotfiles/terminator/config $HOME/.config/terminator/config"
+symlink_dotfiles_source=(
+  "./terminator/config"
+  "./git/.gitconfig"
+)
+
+symlink_dotfiles_dest=(
+  "$HOME/.config/terminator/config"
+  "$HOME/.gitconfig"
 )
 
 print_error() {
@@ -35,12 +55,12 @@ print_success() {
 }
 
 print_result() {
-  [ $1 -eq 0 ] \
-    && print_success "$2" \
-    || print_error "$2"
+  [ $1 -eq 0 ] && print_success "$2" || print_error "$2"
+  [ "$3" == "true" ] && [ $1 -ne 0 ] && exit
+}
 
-  [ "$3" == "true" ] && [ $1 -ne 0 ] \
-    && exit
+ask_for_sudo() {
+    sudo -v &> /dev/null
 }
 
 mkd() {
@@ -63,6 +83,12 @@ execute() {
 }
 
 install_apt_packages() {
+  sudo apt-get update
+  print_success "apt-get update"
+
+  sudo apt-get upgrade
+  print_success "apt-get upgrade"
+
   sudo apt-get install ${apt_packages[@]}
 }
 
@@ -76,15 +102,29 @@ symlink_dotfiles() {
   done
 }
 
-main() {
-  # print_info "Installing apt packages: ${apt_packages[*]}"
-  # install_apt_packages()
+confirm() {
+  while true; do
+    print_question "$1 [y/n]"
+    read -p " " yn
+    case $yn in
+      [Yy]* )
+        $2
+        break
+        ;;
+      [Nn]* ) break;;
+      * ) echo "Please answer yes or no.";;
+    esac
+  done
+}
 
-  print_info "Backup original dotfiles"
-  backup_dotfiles
+main() {
+  ask_for_sudo
+
+  confirm "Install apt packages?" install_apt_packages
+
+  confirm "Backup original dotfiles?" backup_dotfiles
 
   # print_info "Symlink dotfiles: ${apt_packages[*]}"
-
 }
 
 main
