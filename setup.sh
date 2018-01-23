@@ -2,6 +2,8 @@
 
 # https://github.com/alrra/dotfiles/blob/master/src/os/utils.sh
 
+CWD=$(pwd)
+
 backup_dir="$HOME/.dotfiles/backup/"
 
 apt_packages=(
@@ -26,13 +28,15 @@ apt_packages=(
 )
 
 symlink_dotfiles_source=(
-  "./terminator/config"
-  "./git/.gitconfig"
+  "$CWD/terminator/config"
+  "$CWD/git/.gitconfig"
 )
 
 symlink_dotfiles_dest=(
-  "$HOME/.config/terminator/config"
-  "$HOME/.gitconfig"
+  # "$HOME/.config/terminator/config"
+  # "$HOME/.gitconfig"
+  "/tmp/test1"
+  "/tmp/test2"
 )
 
 print_error() {
@@ -56,7 +60,7 @@ print_success() {
 }
 
 print_result() {
-  [ $1 -eq 0 ] && print_success "$2" || print_error "$2"
+  [ $1 -eq 0 ] && print_success "$2" || print_error "Failed"
   # [ "$3" == "true" ] && [ $1 -ne 0 ] && exit
 }
 
@@ -107,8 +111,9 @@ backup_dotfiles() {
 }
 
 symlink_dotfiles() {
-  for i in ${symlink_dotfiles_source[@]}; do
-    execute i
+  # loop over all the keys of the array
+  for i in ${!symlink_dotfiles_source[@]}; do
+    execute "ln --symbolic --force ${symlink_dotfiles_source[$i]} ${symlink_dotfiles_dest[$i]}" "Success"
   done
 }
 
@@ -135,7 +140,7 @@ main() {
 
   confirm "Backup original dotfiles?" backup_dotfiles
 
-  # confirm "Symlink dotfiles?" symlink_dotfiles
+  confirm "Symlink dotfiles?" symlink_dotfiles
 }
 
 main
